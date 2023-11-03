@@ -1,0 +1,171 @@
+openapi: 3.0.3
+info:
+  title: Library API
+  version: 1.0.0
+  description: STD22100
+servers:
+  - url: https://library.com
+paths:
+  /books:
+    get:
+      summary: Get all books
+      description: The returned books are ordered by updated datetime.
+      operationId: getBooks
+      parameters:
+        - in: query
+          name: bookName
+          description: Filter return books by given name
+          required: false
+          schema:
+            type: string
+        #TODO3: add parameter to filter books by intervals 
+        #of dates of the releaseDate
+        - in: query
+          name: intervals
+          description: filter books by intervals of dates of the releaseDate
+          required: false
+          schema:
+            type: string
+          
+      responses:
+        200:
+          description: The list of filtered books
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Book'
+    put:
+      summary: Create or update a list of books
+      operationId: crupdateBooks
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                $ref: '#/components/schemas/Book'
+      responses:
+        200:
+          description: The list of created or updated books
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Book'
+  /authors:
+  #TODO2: complete GET (can be filtered by name) - PUT - DELETE
+    get:
+      summary: Get all authors
+      description: The returned authors can be filtered by name 
+      operationId: getAuthors
+      parameters:
+        - in: query
+          name: AuthorName
+          description: Filter return Author by given name
+          required: false
+          schema:
+            type: string
+      
+      responses:
+        200:
+          description: The list of filtered books
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Author'
+    put:
+      tags:
+        - Author
+      summary: Update an existing pet
+      description: Update an existing pet by Id
+      operationId: updatePet
+      requestBody:
+        description: Update an existent pet in the store
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Author'
+        required: true
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Author'         
+        '400':
+          description: Invalid ID supplied
+        '404':
+          description: Pet not found
+        '405':
+          description: Validation exception
+      security:
+        - petstore_auth:
+            - write:pets
+            - read:pets
+    delete:
+      tags:
+        - Author
+      summary: Deletes a Author
+      description: delete a Author
+      operationId: deleteAuthor
+      parameters:
+        - name: api_key
+          in: header
+          description: ''
+          required: false
+          schema:
+            type: string
+        - name: AuthorId
+          in: path
+          description: Author id to delete
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '400':
+          description: Invalid pet value
+      security:
+        - petstore_auth:
+            - write:pets
+            - read:pets 
+components:
+  schemas:
+    Book:
+      type: object
+      properties:
+        id:
+          type: string
+        bookName:
+          type: string
+        author:
+          #TODO1: set it as a component with properties : id, name, sex (M or F)
+          type: string
+        pageNumbers:
+          type: integer
+        topic:
+          type: string
+          enum:
+            - ROMANCE
+            - COMEDY
+            - OTHER
+        releaseDate:
+          type: string
+          format: date
+    Author:
+      type: object
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        sex:
+          type: string 
+
+        
